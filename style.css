@@ -13,6 +13,8 @@
     border-radius: 10px;
     pointer-events: none;
     z-index: 9999;
+  
+    transition: opacity 0.2s ease;
   }
   
   #subtitle-panel {
@@ -26,6 +28,7 @@
     font-size: 12px;
     border-radius: 8px;
   }
+  
   #subtitle-mini {
     position: fixed;
     top: 10px;

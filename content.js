@@ -13,6 +13,7 @@ findVideo();
 // Subtitle display
 const subtitleDiv = document.createElement("div");
 subtitleDiv.id = "custom-subtitles";
+subtitleDiv.style.display = "none"; // 🔥 start hidden
 document.body.appendChild(subtitleDiv);
 
 // Panel
@@ -45,16 +46,14 @@ panel.innerHTML = `
   <button id="forwardBig">+1.0s</button>
 `;
 
-// Start with mini hidden
+// Minimize logic
 miniBtn.style.display = "none";
 
-// Minimize
 document.getElementById("minimizeBtn").onclick = () => {
   panel.style.display = "none";
   miniBtn.style.display = "block";
 };
 
-// Restore
 miniBtn.onclick = () => {
   panel.style.display = "block";
   miniBtn.style.display = "none";
@@ -128,7 +127,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "}") adjustOffset(1.0);
 });
 
-// Attach to fullscreen/video container
+// Attach elements to fullscreen/video container
 function attachElements() {
   if (!video) return;
 
@@ -153,7 +152,7 @@ function attachElements() {
 document.addEventListener("fullscreenchange", attachElements);
 setInterval(attachElements, 2000);
 
-// Subtitle loop (stable)
+// Subtitle loop (FIXED + no empty box)
 setInterval(() => {
   if (!video || subtitles.length === 0) return;
 
@@ -179,8 +178,10 @@ setInterval(() => {
 
   if (sub && time >= sub.start && time <= sub.end) {
     subtitleDiv.innerText = sub.text;
+    subtitleDiv.style.display = "block"; // 🔥 show only when needed
   } else {
     subtitleDiv.innerText = "";
+    subtitleDiv.style.display = "none"; // 🔥 fully hide
   }
 
 }, 50);
