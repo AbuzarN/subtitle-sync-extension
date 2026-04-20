@@ -3,7 +3,7 @@ let subtitles = [];
 let offset = 0;
 let currentIndex = 0;
 
-// Find video element
+// Find video
 function findVideo() {
   video = document.querySelector("video");
   if (!video) setTimeout(findVideo, 1000);
@@ -13,7 +13,7 @@ findVideo();
 // Subtitle display
 const subtitleDiv = document.createElement("div");
 subtitleDiv.id = "custom-subtitles";
-subtitleDiv.style.display = "none"; // 🔥 start hidden
+subtitleDiv.style.display = "none";
 document.body.appendChild(subtitleDiv);
 
 // Panel
@@ -21,7 +21,7 @@ const panel = document.createElement("div");
 panel.id = "subtitle-panel";
 document.body.appendChild(panel);
 
-// Minimized button
+// Mini button
 const miniBtn = document.createElement("div");
 miniBtn.id = "subtitle-mini";
 miniBtn.innerText = "CC";
@@ -29,7 +29,7 @@ document.body.appendChild(miniBtn);
 
 // Panel UI
 panel.innerHTML = `
-  <div style="display:flex; justify-content:space-between; align-items:center;">
+  <div style="display:flex; justify-content:space-between; align-items:center; cursor:move;">
     <strong>Subtitles</strong>
     <button id="minimizeBtn">–</button>
   </div>
@@ -59,7 +59,7 @@ miniBtn.onclick = () => {
   miniBtn.style.display = "none";
 };
 
-// Convert time
+// Time conversion
 function toSeconds(timeStr) {
   const [h, m, s] = timeStr.replace(",", ".").split(":");
   return (+h * 3600) + (+m * 60) + parseFloat(s);
@@ -89,7 +89,7 @@ function parseSRT(data) {
   return result;
 }
 
-// Load SRT
+// Load file
 document.getElementById("srtFile").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => {
@@ -127,7 +127,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "}") adjustOffset(1.0);
 });
 
-// Attach elements to fullscreen/video container
+// Attach to fullscreen / video
 function attachElements() {
   if (!video) return;
 
@@ -136,41 +136,25 @@ function attachElements() {
     video.parentElement ||
     document.body;
 
-  if (subtitleDiv.parentElement !== parent) {
-    parent.appendChild(subtitleDiv);
-  }
-
-  if (panel.parentElement !== parent) {
-    parent.appendChild(panel);
-  }
-
-  if (miniBtn.parentElement !== parent) {
-    parent.appendChild(miniBtn);
-  }
+  if (subtitleDiv.parentElement !== parent) parent.appendChild(subtitleDiv);
+  if (panel.parentElement !== parent) parent.appendChild(panel);
+  if (miniBtn.parentElement !== parent) parent.appendChild(miniBtn);
 }
 
 document.addEventListener("fullscreenchange", attachElements);
 setInterval(attachElements, 2000);
 
-// Subtitle loop (FIXED + no empty box)
+// Subtitle loop
 setInterval(() => {
   if (!video || subtitles.length === 0) return;
 
   const time = video.currentTime + offset;
 
-  // Move forward
-  while (
-    currentIndex < subtitles.length &&
-    time > subtitles[currentIndex].end
-  ) {
+  while (currentIndex < subtitles.length && time > subtitles[currentIndex].end) {
     currentIndex++;
   }
 
-  // Move backward
-  while (
-    currentIndex > 0 &&
-    time < subtitles[currentIndex].start
-  ) {
+  while (currentIndex > 0 && time < subtitles[currentIndex].start) {
     currentIndex--;
   }
 
@@ -178,10 +162,59 @@ setInterval(() => {
 
   if (sub && time >= sub.start && time <= sub.end) {
     subtitleDiv.innerText = sub.text;
-    subtitleDiv.style.display = "block"; // 🔥 show only when needed
+    subtitleDiv.style.display = "block";
   } else {
-    subtitleDiv.innerText = "";
-    subtitleDiv.style.display = "none"; // 🔥 fully hide
+    subtitleDiv.style.display = "none";
   }
 
 }, 50);
+
+// 🔥 DRAG + SAVE POSITION
+function makeDraggable(el, key) {
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  el.style.position = "fixed";
+
+  // Load saved position
+  const saved = JSON.parse(localStorage.getItem(key) || "null");
+  if (saved) {
+    el.style.left = saved.x + "px";
+    el.style.top = saved.y + "px";
+    el.style.right = "auto";
+  }
+
+  el.addEventListener("mousedown", (e) => {
+    isDragging = true;
+
+    const rect = el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.right = "auto";
+
+    // Save position
+    localStorage.setItem(key, JSON.stringify({ x, y }));
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+    document.body.style.userSelect = "auto";
+  });
+}
+
+// Apply draggable behavior
+makeDraggable(panel, "panelPos");
+makeDraggable(miniBtn, "miniPos");

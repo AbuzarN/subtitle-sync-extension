@@ -1,43 +1,143 @@
+/* 🌌 Subtitle display */
 #custom-subtitles {
     position: fixed;
-    bottom: 10%;
+    bottom: 8%;
     left: 50%;
     transform: translateX(-50%);
     max-width: 70%;
+  
     text-align: center;
-    font-size: 26px;
-    color: white;
-    text-shadow: 2px 2px 6px black;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 10px 16px;
-    border-radius: 10px;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.4;
+  
+    color: #ffffff;
+    text-shadow:
+      0 2px 6px rgba(0,0,0,0.9),
+      0 0 12px rgba(0,0,0,0.6);
+  
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+  
+    padding: 12px 18px;
+    border-radius: 12px;
+  
     pointer-events: none;
     z-index: 9999;
-  
-    transition: opacity 0.2s ease;
   }
   
+  /* 🧊 Main panel */
   #subtitle-panel {
     position: fixed;
-    top: 10px;
-    right: 10px;
-    background: black;
-    color: white;
-    padding: 12px;
+    top: 20px;
+    left: 20px;
+  
+    width: 220px;
+  
+    background: rgba(20, 20, 20, 0.75);
+    backdrop-filter: blur(10px);
+  
+    color: #f5f5f5;
+  
+    padding: 14px;
+    border-radius: 12px;
+  
+    font-size: 13px;
+  
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  
     z-index: 10000;
-    font-size: 12px;
-    border-radius: 8px;
+    user-select: none;
   }
   
+  /* Header */
+  #subtitle-panel strong {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Header row */
+  #subtitle-panel > div {
+    margin-bottom: 6px;
+  }
+  
+  /* File input */
+  #subtitle-panel input[type="file"] {
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+  
+  /* Offset text */
+  #offsetValue {
+    font-weight: 600;
+    color: #4da3ff;
+  }
+  
+  /* 🎮 Button grid */
+  #subtitle-panel button {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+  
+    padding: 6px 8px;
+    margin: 2px;
+  
+    border-radius: 6px;
+    font-size: 12px;
+  
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  
+  /* Hover */
+  #subtitle-panel button:hover {
+    background: rgba(255,255,255,0.18);
+  }
+  
+  /* Active press */
+  #subtitle-panel button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Group buttons into rows */
+  #subtitle-panel button {
+    width: 48%;
+  }
+  
+  /* 🧊 Mini button */
   #subtitle-mini {
     position: fixed;
-    top: 10px;
-    right: 10px;
-    background: black;
+    top: 20px;
+    left: 20px;
+  
+    background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(8px);
+  
     color: white;
-    padding: 8px 10px;
-    border-radius: 6px;
+    font-weight: 600;
+  
+    padding: 8px 12px;
+    border-radius: 8px;
+  
     cursor: pointer;
+    transition: all 0.2s ease;
+  
     z-index: 10000;
-    font-size: 12px;
+  }
+  
+  /* Mini hover */
+  #subtitle-mini:hover {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  /* Subtle fade-in feel */
+  #custom-subtitles {
+    animation: fadeIn 0.2s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
