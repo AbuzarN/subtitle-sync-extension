@@ -40,15 +40,19 @@ panel.innerHTML = `
 
   Offset: <span id="offsetValue">0.00</span>s<br><br>
 
-  <button id="backBig">-1.0s</button>
-  <button id="backSmall">-0.1s</button>
-  <button id="forwardSmall">+0.1s</button>
-  <button id="forwardBig">+1.0s</button>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+    <button id="backBig">-1.0s</button>
+    <button id="forwardBig">+1.0s</button>
+    <button id="backSmall">-0.1s</button>
+    <button id="forwardSmall">+0.1s</button>
+  </div>
 `;
 
-// Minimize logic
-miniBtn.style.display = "none";
+// ✅ Start minimized by default
+panel.style.display = "none";
+miniBtn.style.display = "block";
 
+// Toggle
 document.getElementById("minimizeBtn").onclick = () => {
   panel.style.display = "none";
   miniBtn.style.display = "block";
@@ -59,7 +63,7 @@ miniBtn.onclick = () => {
   miniBtn.style.display = "none";
 };
 
-// Time conversion
+// Convert time
 function toSeconds(timeStr) {
   const [h, m, s] = timeStr.replace(",", ".").split(":");
   return (+h * 3600) + (+m * 60) + parseFloat(s);
@@ -89,7 +93,7 @@ function parseSRT(data) {
   return result;
 }
 
-// Load file
+// Load SRT
 document.getElementById("srtFile").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => {
@@ -169,7 +173,7 @@ setInterval(() => {
 
 }, 50);
 
-// DRAG + SAVE POSITION
+// Drag + save
 function makeDraggable(el, key) {
   let isDragging = false;
   let offsetX = 0;
@@ -177,7 +181,6 @@ function makeDraggable(el, key) {
 
   el.style.position = "fixed";
 
-  // Load saved position
   const saved = JSON.parse(localStorage.getItem(key) || "null");
   if (saved) {
     el.style.left = saved.x + "px";
@@ -205,7 +208,6 @@ function makeDraggable(el, key) {
     el.style.top = y + "px";
     el.style.right = "auto";
 
-    // Save position
     localStorage.setItem(key, JSON.stringify({ x, y }));
   });
 
@@ -215,6 +217,5 @@ function makeDraggable(el, key) {
   });
 }
 
-// Apply draggable behavior
 makeDraggable(panel, "panelPos");
 makeDraggable(miniBtn, "miniPos");
