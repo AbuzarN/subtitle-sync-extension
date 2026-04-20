@@ -169,7 +169,7 @@ setInterval(() => {
 
 }, 50);
 
-// 🔥 DRAG + SAVE POSITION
+// DRAG + SAVE POSITION
 function makeDraggable(el, key) {
   let isDragging = false;
   let offsetX = 0;
