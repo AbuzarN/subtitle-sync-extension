@@ -18,6 +18,46 @@ document.body.appendChild(subtitleDiv);
 
 // Panel
 const panel = document.createElement("div");
+
+// File input for subtitles
+const fileInput = document.createElement("input");
+fileInput.type = "file";
+fileInput.accept = ".srt";
+fileInput.style.display = "none";
+document.body.appendChild(fileInput);
+
+// Handle file upload
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) {
+    alert("No file selected. Please upload a valid .srt file.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      subtitles = parseSRT(reader.result); // Assuming parseSRT is defined elsewhere
+      if (!subtitles || subtitles.length === 0) {
+        throw new Error("No subtitles found in the file.");
+      }
+      currentIndex = 0;
+      alert("Subtitles loaded successfully!");
+    } catch (err) {
+      alert("Invalid SRT file. Please upload a valid subtitle file.");
+    }
+  };
+  reader.onerror = () => {
+    alert("Error reading the file. Please try again.");
+  };
+  reader.readAsText(file);
+});
+
+// Trigger file input (example usage)
+const uploadButton = document.createElement("button");
+uploadButton.innerText = "Upload Subtitles";
+uploadButton.onclick = () => fileInput.click();
+document.body.appendChild(uploadButton);
 panel.id = "subtitle-panel";
 document.body.appendChild(panel);
 

@@ -1,114 +1,142 @@
 #custom-subtitles {
-    position: fixed;
-    bottom: 8%;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 70%;
-  
-    text-align: center;
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 1.4;
-  
-    color: #ffffff;
-    text-shadow:
-      0 2px 6px rgba(0,0,0,0.9),
-      0 0 12px rgba(0,0,0,0.6);
-  
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(6px);
-  
-    padding: 12px 18px;
-    border-radius: 12px;
-  
-    pointer-events: none;
-    z-index: 9999;
-  }
-  
-  /* Panel */
-  #subtitle-panel {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-  
-    width: 220px;
-  
-    background: rgba(20, 20, 20, 0.8);
-    backdrop-filter: blur(10px);
-  
-    color: #f5f5f5;
-  
-    padding: 14px;
-    border-radius: 12px;
-  
-    font-size: 13px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  
-    z-index: 10000;
-    cursor: move;
-  }
-  
-  /* Buttons */
-  #subtitle-panel button {
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: white;
-  
-    padding: 6px 8px;
-    border-radius: 6px;
-  
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  
-  #subtitle-panel button:hover {
-    background: rgba(255,255,255,0.18);
-  }
-  
-  #subtitle-panel button:active {
-    transform: scale(0.95);
-  }
-  
-  #offsetValue {
-    color: #4da3ff;
-    font-weight: 600;
-  }
-  
-  /* Mini button */
-  #subtitle-mini {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-  
-    background: rgba(20, 20, 20, 0.9);
-    backdrop-filter: blur(8px);
-  
-    color: #4da3ff;
-  
-    padding: 8px 12px;
-    border-radius: 8px;
-  
-    font-size: 13px;
-    font-weight: 600;
-  
-    border: 1px solid rgba(77, 163, 255, 0.6);
-    box-shadow:
-      0 0 8px rgba(77, 163, 255, 0.4),
-      0 4px 12px rgba(0,0,0,0.6);
-  
-    cursor: move;
-    transition: all 0.2s ease;
-  
-    z-index: 10000;
-  }
-  
-  #subtitle-mini:hover {
-    background: rgba(77, 163, 255, 0.15);
-    box-shadow:
-      0 0 12px rgba(77, 163, 255, 0.7),
-      0 6px 16px rgba(0,0,0,0.7);
-  }
-  
-  #subtitle-mini:active {
-    transform: scale(0.95);
-  }
+  position: fixed;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 70%;
+
+  text-align: center;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  color: #ffffff;
+  text-shadow:
+    0 2px 6px rgba(0,0,0,0.9),
+    0 0 12px rgba(0,0,0,0.6);
+
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+
+  padding: 12px 18px;
+  border-radius: 12px;
+
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Panel */
+#subtitle-panel {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  width: 220px;
+
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(10px);
+
+  color: #f5f5f5;
+
+  padding: 14px;
+  border-radius: 12px;
+
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+
+  z-index: 10000;
+  cursor: move;
+
+  overflow: hidden; /* prevents content from bleeding */
+}
+
+/* Buttons */
+#subtitle-panel button {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: white;
+
+  padding: 6px 8px;
+  border-radius: 6px;
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+#subtitle-panel button:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+#subtitle-panel button:active {
+  transform: scale(0.95);
+}
+
+#offsetValue {
+  color: #4da3ff;
+  font-weight: 600;
+}
+
+/* Results container fix */
+#results {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Individual result items */
+#results div {
+  cursor: pointer;
+  padding: 4px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  max-width: 100%;
+  display: block;
+}
+
+/* Hover effect */
+#results div:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* Mini button */
+#subtitle-mini {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  background: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(8px);
+
+  color: #4da3ff;
+
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  border: 1px solid rgba(77, 163, 255, 0.6);
+  box-shadow:
+    0 0 8px rgba(77, 163, 255, 0.4),
+    0 4px 12px rgba(0,0,0,0.6);
+
+  cursor: move;
+  transition: all 0.2s ease;
+
+  z-index: 10000;
+}
+
+#subtitle-mini:hover {
+  background: rgba(77, 163, 255, 0.15);
+  box-shadow:
+    0 0 12px rgba(77, 163, 255, 0.7),
+    0 6px 16px rgba(0,0,0,0.7);
+}
+
+#subtitle-mini:active {
+  transform: scale(0.95);
+}
