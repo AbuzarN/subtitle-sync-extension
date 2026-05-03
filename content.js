@@ -1,17 +1,19 @@
-let video = null;
-let subtitles = [];
-let offset = 0;
-let currentIndex = 0;
+const state = {
+  video : null,
+  subtitles : [],
+  offset : 0,
+  currentIndex : 0
+};
 
 let subtitleDiv, panel, miniBtn;
 
-// 🔍 Wait for video before initializing anything
+// Wait for video before initializing anything
 function waitForVideoAndInit() {
   const check = setInterval(() => {
     const vid = document.querySelector("video");
 
     if (vid) {
-      video = vid;
+      state.video = vid;
       clearInterval(check);
       initUI();
     }
@@ -20,7 +22,7 @@ function waitForVideoAndInit() {
 
 waitForVideoAndInit();
 
-// 🧱 Initialize UI ONLY when video exists
+// Initialize UI ONLY when video exists
 function initUI() {
   // Subtitle display
   subtitleDiv = document.createElement("div");
@@ -79,8 +81,8 @@ function initUI() {
   document.getElementById("srtFile").addEventListener("change", e => {
     const reader = new FileReader();
     reader.onload = () => {
-      subtitles = parseSRT(reader.result);
-      currentIndex = 0;
+      state.subtitles = parseSRT(reader.result);
+      state.currentIndex = 0;
     };
     reader.readAsText(e.target.files[0]);
   });
@@ -89,11 +91,11 @@ function initUI() {
   const offsetLabel = document.getElementById("offsetValue");
 
   function updateOffset() {
-    offsetLabel.textContent = offset.toFixed(2);
+    offsetLabel.textContent = state.offset.toFixed(2);
   }
 
   function adjustOffset(val) {
-    offset += val;
+    state.offset += val;
     updateOffset();
   }
 
@@ -114,11 +116,11 @@ function initUI() {
 
   // Attach to fullscreen/video
   function attachElements() {
-    if (!video) return;
+    if (!state.video) return;
 
     const parent =
       document.fullscreenElement ||
-      video.parentElement ||
+      state.video.parentElement ||
       document.body;
 
     if (subtitleDiv.parentElement !== parent) parent.appendChild(subtitleDiv);
@@ -131,19 +133,11 @@ function initUI() {
 
   // Subtitle loop
   setInterval(() => {
-    if (!video || subtitles.length === 0) return;
+    if (!state.video || state.subtitles.length === 0) return;
 
-    const time = video.currentTime + offset;
+    const time = state.video.currentTime + state.offset;
 
-    while (currentIndex < subtitles.length && time > subtitles[currentIndex].end) {
-      currentIndex++;
-    }
-
-    while (currentIndex > 0 && time < subtitles[currentIndex].start) {
-      currentIndex--;
-    }
-
-    const sub = subtitles[currentIndex];
+    const sub = getCurrentSubtitle(time);
 
     if (sub && time >= sub.start && time <= sub.end) {
       subtitleDiv.innerText = sub.text;
@@ -202,7 +196,20 @@ function initUI() {
   makeDraggable(miniBtn, "miniPos");
 }
 
-// 🧠 Helpers
+function getCurrentSubtitle(time) {
+  while (state.currentIndex < state.subtitles.length - 1 && time > state.subtitles[state.currentIndex].end) {
+    state.currentIndex++;
+  }
+
+  while (state.currentIndex > 0 && time < state.subtitles[state.currentIndex].start) {
+    state.currentIndex--;
+  }
+
+  const sub = state.subtitles[state.currentIndex];
+  return sub;
+}
+
+// Helpers
 function toSeconds(timeStr) {
   const [h, m, s] = timeStr.replace(",", ".").split(":");
   return (+h * 3600) + (+m * 60) + parseFloat(s);
