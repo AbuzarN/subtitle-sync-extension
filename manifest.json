@@ -1,14 +1,19 @@
 {
     "manifest_version": 3,
     "name": "Subtitle Sync Tool",
-    "version": "3.3",
+    "version": "4.0",
     "description": "Overlay and sync subtitles with adjustable timing",
     "permissions": ["activeTab"],
     "host_permissions": ["<all_urls>"],
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
-        "js": ["content.js"],
+        "js": [
+          "state.js",
+          "subtitles.js",
+          "utils.js",
+          "ui.js",
+          "content.js"],
         "css": ["style.css"],
         "all_frames": true
       }
