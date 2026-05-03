@@ -132,21 +132,7 @@ function initUI() {
   setInterval(attachElements, 2000);
 
   // Subtitle loop
-  setInterval(() => {
-    if (!state.video || state.subtitles.length === 0) return;
-
-    const time = state.video.currentTime + state.offset;
-
-    const sub = getCurrentSubtitle(time);
-
-    if (sub && time >= sub.start && time <= sub.end) {
-      subtitleDiv.innerText = sub.text;
-      subtitleDiv.style.display = "block";
-    } else {
-      subtitleDiv.style.display = "none";
-    }
-
-  }, 50);
+  startSubtitleLoop()
 
   // Drag + save
   function makeDraggable(el, key) {
@@ -196,6 +182,15 @@ function initUI() {
   makeDraggable(miniBtn, "miniPos");
 }
 
+function renderSubtitle(sub, time) {
+  if (sub && time >= sub.start && time <= sub.end) {
+    subtitleDiv.innerText = sub.text;
+    subtitleDiv.style.display = "block";
+  } else {
+    subtitleDiv.style.display = "none";
+  }
+}
+
 function getCurrentSubtitle(time) {
   while (state.currentIndex < state.subtitles.length - 1 && time > state.subtitles[state.currentIndex].end) {
     state.currentIndex++;
@@ -208,6 +203,19 @@ function getCurrentSubtitle(time) {
   const sub = state.subtitles[state.currentIndex];
   return sub;
 }
+
+function startSubtitleLoop() {
+  setInterval(() => {
+    if (!state.video || state.subtitles.length === 0) return;
+
+    const time = state.video.currentTime + state.offset;
+
+    const sub = getCurrentSubtitle(time);
+
+    renderSubtitle(sub, time);
+
+  }, 50);
+};
 
 // Helpers
 function toSeconds(timeStr) {
