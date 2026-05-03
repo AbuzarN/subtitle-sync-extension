@@ -1,24 +1,36 @@
-// Initialize UI ONLY when video exists
-function initUI() {
-
-    // Subtitle display
+// Main entry
+function initUI({ onSubtitlesLoaded, onOffsetChange, getOffset }) {
+    const elements = createUIElements();
+  
+    setupLayout(elements.panel);
+    setupToggle(elements.panel, elements.miniBtn);
+    setupControls(elements, { onSubtitlesLoaded, onOffsetChange, getOffset });
+    setupDragging(elements.panel, elements.miniBtn);
+    setupFullscreenBehavior(elements);
+  
+    return elements;
+  }
+  
+  function createUIElements() {
     const subtitleDiv = document.createElement("div");
     subtitleDiv.id = "custom-subtitles";
     subtitleDiv.style.display = "none";
-    document.body.appendChild(subtitleDiv);
   
-    // Panel
     const panel = document.createElement("div");
     panel.id = "subtitle-panel";
-    document.body.appendChild(panel);
   
-    // Mini button
     const miniBtn = document.createElement("div");
     miniBtn.id = "subtitle-mini";
     miniBtn.innerText = "CC";
+  
+    document.body.appendChild(subtitleDiv);
+    document.body.appendChild(panel);
     document.body.appendChild(miniBtn);
   
-    // UI layout
+    return { subtitleDiv, panel, miniBtn };
+  }
+  
+  function setupLayout(panel) {
     panel.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <strong>Subtitles</strong>
@@ -38,12 +50,12 @@ function initUI() {
         <button id="forwardSmall">+0.1s</button>
       </div>
     `;
+  }
   
-    // Start minimized
+  function setupToggle(panel, miniBtn) {
     panel.style.display = "none";
     miniBtn.style.display = "block";
   
-    // Toggle
     document.getElementById("minimizeBtn").onclick = () => {
       panel.style.display = "none";
       miniBtn.style.display = "block";
@@ -53,29 +65,32 @@ function initUI() {
       panel.style.display = "block";
       miniBtn.style.display = "none";
     };
+  }
+  
+  function setupControls(elements, { onSubtitlesLoaded, onOffsetChange, getOffset }) {
+    const fileInput = document.getElementById("srtFile");
+    const offsetLabel = document.getElementById("offsetValue");
   
     // Load SRT
-    document.getElementById("srtFile").addEventListener("change", e => {
+    fileInput.addEventListener("change", e => {
       const reader = new FileReader();
       reader.onload = () => {
-        state.subtitles = parseSRT(reader.result);
-        state.currentIndex = 0;
+        const subs = parseSRT(reader.result);
+        onSubtitlesLoaded(subs);
       };
       reader.readAsText(e.target.files[0]);
     });
   
-    // Offset controls
-    const offsetLabel = document.getElementById("offsetValue");
-  
     function updateOffset() {
-      offsetLabel.textContent = state.offset.toFixed(2);
+      offsetLabel.textContent = getOffset().toFixed(2);
     }
   
     function adjustOffset(val) {
-      state.offset += val;
+      onOffsetChange(val);
       updateOffset();
     }
   
+    // Buttons
     document.getElementById("backBig").onclick = () => adjustOffset(-1.0);
     document.getElementById("backSmall").onclick = () => adjustOffset(-0.1);
     document.getElementById("forwardSmall").onclick = () => adjustOffset(0.1);
@@ -90,8 +105,57 @@ function initUI() {
       if (e.key === "{") adjustOffset(-1.0);
       if (e.key === "}") adjustOffset(1.0);
     });
+  }
+
+  function setupDragging(panel, miniBtn) {
+    makeDraggable(panel, "panelPos");
+    makeDraggable(miniBtn, "miniPos");
+  }
   
-    // Attach to fullscreen/video
+  function makeDraggable(el, key) {
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+  
+    el.style.position = "fixed";
+  
+    const saved = JSON.parse(localStorage.getItem(key) || "null");
+    if (saved) {
+      el.style.left = saved.x + "px";
+      el.style.top = saved.y + "px";
+      el.style.right = "auto";
+    }
+  
+    el.addEventListener("mousedown", (e) => {
+      isDragging = true;
+  
+      const rect = el.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+  
+      document.body.style.userSelect = "none";
+    });
+  
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+  
+      const x = e.clientX - offsetX;
+      const y = e.clientY - offsetY;
+  
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.right = "auto";
+  
+      localStorage.setItem(key, JSON.stringify({ x, y }));
+    });
+  
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      document.body.style.userSelect = "auto";
+    });
+  }
+  
+  function setupFullscreenBehavior({ subtitleDiv, panel, miniBtn }) {
     function attachElements() {
       if (!state.video) return;
   
@@ -107,57 +171,4 @@ function initUI() {
   
     document.addEventListener("fullscreenchange", attachElements);
     setInterval(attachElements, 2000);
-  
-    // Drag + save
-    function makeDraggable(el, key) {
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
-  
-      el.style.position = "fixed";
-  
-      const saved = JSON.parse(localStorage.getItem(key) || "null");
-      if (saved) {
-        el.style.left = saved.x + "px";
-        el.style.top = saved.y + "px";
-        el.style.right = "auto";
-      }
-  
-      el.addEventListener("mousedown", (e) => {
-        isDragging = true;
-  
-        const rect = el.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-  
-        document.body.style.userSelect = "none";
-      });
-  
-      document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-  
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-  
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-        el.style.right = "auto";
-  
-        localStorage.setItem(key, JSON.stringify({ x, y }));
-      });
-  
-      document.addEventListener("mouseup", () => {
-        isDragging = false;
-        document.body.style.userSelect = "auto";
-      });
-    }
-  
-    makeDraggable(panel, "panelPos");
-    makeDraggable(miniBtn, "miniPos");
-
-    return {
-        subtitleDiv,
-        panel,
-        miniBtn
-      };
   }

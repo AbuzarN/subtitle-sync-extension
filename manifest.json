@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Subtitle Sync Tool",
-    "version": "4.0",
+    "version": "4.1",
     "description": "Overlay and sync subtitles with adjustable timing",
     "permissions": ["activeTab"],
     "host_permissions": ["<all_urls>"],

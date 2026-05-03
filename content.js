@@ -6,7 +6,18 @@ function waitForVideoAndInit() {
     if (vid) {
       state.video = vid;
       clearInterval(check);
-      const ui = initUI();
+
+      const ui = initUI({
+        onSubtitlesLoaded: (subs) => {
+          state.subtitles = subs;
+          state.currentIndex = 0;
+        },
+        onOffsetChange: (val) => {
+          state.offset += val;
+        },
+        getOffset: () => state.offset
+      });
+
       // Subtitle loop
       startSubtitleLoop(ui)
     }
